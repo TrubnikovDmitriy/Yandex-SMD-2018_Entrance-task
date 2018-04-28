@@ -1,7 +1,7 @@
 package entrance.smd.ru.entranceyandexsmd.models;
 
-
 import com.google.gson.annotations.SerializedName;
+
 
 public class YandexImage {
 

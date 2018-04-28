@@ -1,9 +1,7 @@
 package entrance.smd.ru.entranceyandexsmd.models;
 
-
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
+
 
 public class YandexPhoto {
 	// TODO: try make fields final

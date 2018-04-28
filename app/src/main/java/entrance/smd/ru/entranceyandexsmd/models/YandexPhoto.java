@@ -43,11 +43,11 @@ public class YandexPhoto {
 
 
 	private static final class YandexImages {
-		@SerializedName("S")
-		private YandexImage small;
-		@SerializedName("M")
-		private YandexImage medium;
 		@SerializedName("L")
+		private YandexImage small;
+		@SerializedName("XXL")
+		private YandexImage medium;
+		@SerializedName("XXXL")
 		private YandexImage large;
 	}
 }

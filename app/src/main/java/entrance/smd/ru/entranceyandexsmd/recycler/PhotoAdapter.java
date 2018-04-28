@@ -1,5 +1,6 @@
 package entrance.smd.ru.entranceyandexsmd.recycler;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -8,6 +9,14 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
+import javax.inject.Inject;
+
+import dagger.Provides;
+import entrance.smd.ru.entranceyandexsmd.App;
 import entrance.smd.ru.entranceyandexsmd.R;
 import entrance.smd.ru.entranceyandexsmd.models.YandexCollection;
 import entrance.smd.ru.entranceyandexsmd.models.YandexPhoto;
@@ -18,22 +27,27 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoHolder>
 	@Nullable
 	private YandexCollection dataset;
 
-	static class PhotoHolder extends RecyclerView.ViewHolder {
+	class PhotoHolder extends RecyclerView.ViewHolder {
 
 		private final ImageView imageView;
+		private final Picasso picasso;
 		private YandexPhoto photo;
-		private String title;
 
 		private PhotoHolder(CardView item) {
 			super(item);
+			picasso = Picasso.with(item.getContext());
+			picasso.setIndicatorsEnabled(true);
 			imageView = item.findViewById(R.id.image);
 		}
 
 		private void updateData(@NonNull final YandexPhoto photo) {
+
 			this.photo = photo;
-			this.title = photo.getTitle();
-			// TODO: delete stub
-			this.imageView.setImageResource(R.drawable.ic_launcher_background);
+			imageView.setContentDescription(photo.getTitle());
+
+			picasso.load(photo.getSmallUrl())
+					.placeholder(R.mipmap.placeholder)
+					.into(imageView);
 		}
 	}
 
@@ -66,4 +80,5 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoHolder>
 		this.dataset = dataset;
 		notifyDataSetChanged();
 	}
+
 }

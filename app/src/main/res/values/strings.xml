@@ -1,17 +1,6 @@
 <resources>
     <string name="app_name">Entrance Yandex SMD</string>
-
-    <!--TODO: remove to test-res dir-->
-    <!--test deserialization-->
-    <string name="test_json">{"width" : 1280,"height" : 861,"href" : "https://img7-fotki.yandex.net/get/908969/92899186.9e/0_STATIC10d7f7_d4fc49d7_XXXL"}\r\n</string>
-    <!--<string name="test_json">-->
-        <!--{-->
-            <!--"width" : 1280,-->
-            <!--"height" : 861,-->
-            <!--"href" : "https\:\/\/img7\-fotki\.yandex\.net\/get\/908969\/92899186\.9e\/0_STATIC10d7f7_d4fc49d7_XXXL"-->
-        <!--}-->
-    <!--</string>-->
-    <string name="test_width">1280</string>
-    <string name="test_height">861</string>
-    <string name="test_href">https://img7-fotki.yandex.net/get/908969/92899186.9e/0_STATIC10d7f7_d4fc49d7_XXXL</string>
+    <string name="no_photo_description">No photo description</string>
+    <string name="network_failure">Invalid server response</string>
+    <string name="network_err">Error connecting to server</string>
 </resources>

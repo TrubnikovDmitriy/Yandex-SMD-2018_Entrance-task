@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:contentPadding="@dimen/padding_photo_holder"
+    app:cardCornerRadius="@dimen/radius_photo_holder">
+
+    <ImageView
+        android:background="@color/cardview_dark_background"
+        android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/no_photo_description"
+        android:layout_gravity="center"
+        />
+
+</android.support.v7.widget.CardView>

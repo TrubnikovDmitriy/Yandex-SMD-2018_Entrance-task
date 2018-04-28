@@ -10,13 +10,13 @@ public class YandexCollection {
 	@SerializedName("title")
 	private String title;
 	@SerializedName("entries")
-	private ArrayList<YandexPhoto> arrayList;
+	private ArrayList<YandexPhoto> photos;
 
 	public String getTitle() {
 		return title;
 	}
 
-	public ArrayList<YandexPhoto> getArrayList() {
-		return arrayList;
+	public ArrayList<YandexPhoto> getPhotos() {
+		return photos;
 	}
 }

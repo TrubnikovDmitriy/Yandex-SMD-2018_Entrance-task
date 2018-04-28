@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Вступительное задание ШМД</string>
+    <string name="no_photo_description">Описание изображения отсуствует</string>
+    <string name="network_err">Ошибка соединения с сервером. Проверьте интеренет соединение</string>
+    <string name="network_failure">Некорректный ответ сервера</string>
+</resources>

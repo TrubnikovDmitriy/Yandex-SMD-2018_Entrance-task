@@ -2,10 +2,11 @@ package entrance.smd.ru.entranceyandexsmd.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class YandexCollection {
+public class YandexCollection implements Serializable {
 
 	@SerializedName("title")
 	private String title;

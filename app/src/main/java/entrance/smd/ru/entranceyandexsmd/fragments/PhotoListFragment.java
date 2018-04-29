@@ -58,18 +58,29 @@ public class PhotoListFragment extends Fragment {
 
 		if (savedInstanceState == null) {
 			yandexAPI.getCollection(new OnYandexCollectionLoad());
-
 		} else {
 			collection = (YandexCollection) savedInstanceState.getSerializable(COLLECTION);
 			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 
-		// TODO: fix size of adapter's holder
 		adapter = new PhotoAdapter(collection);
 		recyclerView.setAdapter(adapter);
 		recyclerView.setHasFixedSize(true);
-		recyclerView.setLayoutManager(new GridLayoutManager(
-				getContext(), getResources().getInteger(R.integer.span_grid_count)));
+
+		// This is necessary for the correct display of ProgressBar in the footer
+		final Integer spanCount = getResources().getInteger(R.integer.span_grid_count);
+		final GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), spanCount);
+		gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+			@Override
+			public int getSpanSize(int position) {
+				if (adapter.getItemViewType(position) == PhotoAdapter.LOADING_TYPE) {
+					return spanCount;
+				}
+				// Default value
+				return 1;
+			}
+		});
+		recyclerView.setLayoutManager(gridLayoutManager);
 
 		return view;
 	}

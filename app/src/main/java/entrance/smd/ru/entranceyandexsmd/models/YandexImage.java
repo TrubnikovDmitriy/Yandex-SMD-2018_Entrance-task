@@ -1,14 +1,12 @@
 package entrance.smd.ru.entranceyandexsmd.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 
-public class YandexImage {
+public class YandexImage implements Serializable {
 
 	@SerializedName("href")
 	private String url;

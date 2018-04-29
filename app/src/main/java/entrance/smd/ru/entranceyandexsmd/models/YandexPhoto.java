@@ -2,8 +2,10 @@ package entrance.smd.ru.entranceyandexsmd.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 
-public class YandexPhoto {
+
+public class YandexPhoto implements Serializable {
 	// TODO: try make fields final
 	// TODO: read about final in habrahabr guide
 
@@ -42,7 +44,7 @@ public class YandexPhoto {
 	}
 
 
-	private static final class YandexImages {
+	private static final class YandexImages implements Serializable {
 		@SerializedName("L")
 		private YandexImage small;
 		@SerializedName("XXL")

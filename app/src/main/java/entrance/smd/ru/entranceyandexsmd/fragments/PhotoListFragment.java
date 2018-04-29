@@ -67,7 +67,7 @@ public class PhotoListFragment extends Fragment {
 		// TODO: fix size of adapter's holder
 		adapter = new PhotoAdapter(collection);
 		recyclerView.setAdapter(adapter);
-//		recyclerView.setHasFixedSize(true);
+		recyclerView.setHasFixedSize(true);
 		recyclerView.setLayoutManager(new GridLayoutManager(
 				getContext(), getResources().getInteger(R.integer.span_grid_count)));
 

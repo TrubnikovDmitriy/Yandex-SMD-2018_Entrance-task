@@ -39,14 +39,10 @@ public class PhotoListFragment extends Fragment {
 	private PhotoAdapter adapter;
 	private GridLayoutManager layoutManager;
 
-	@Inject
-	YandexFotkiAPI yandexAPI;
+	@Inject YandexFotkiAPI yandexAPI;
 
-	@BindView(R.id.progress_bar)
-	ProgressBar progressBar;
-
-	@BindView(R.id.recycler)
-	RecyclerView recyclerView;
+	@BindView(R.id.progress_bar) ProgressBar progressBar;
+	@BindView(R.id.recycler) RecyclerView recyclerView;
 
 	@Nullable
 	@Override
@@ -58,6 +54,7 @@ public class PhotoListFragment extends Fragment {
 		ButterKnife.bind(this, view);
 		App.getComponent().inject(this);
 
+		showSystemUI(container);
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 
 		ArrayList<YandexPhoto> dataset = null;
@@ -87,6 +84,7 @@ public class PhotoListFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
+
 	private void createRecyclerView(@Nullable final ArrayList<YandexPhoto> collection) {
 
 		adapter = new PhotoAdapter(collection);
@@ -112,6 +110,14 @@ public class PhotoListFragment extends Fragment {
 
 		// Loading additional data if RecyclerView is scrolled through
 		recyclerView.addOnScrollListener(new OnEndlessScrollListener());
+	}
+
+	// For return to normal view after exit from PhotoFragment
+	private void showSystemUI(@Nullable final View view) {
+		if (view != null) {
+			view.setSystemUiVisibility(
+					View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+		}
 	}
 
 
@@ -237,5 +243,4 @@ public class PhotoListFragment extends Fragment {
 			}
 		}
 	}
-
 }

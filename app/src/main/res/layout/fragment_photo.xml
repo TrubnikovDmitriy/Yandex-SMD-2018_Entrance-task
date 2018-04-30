@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="entrance.smd.ru.entranceyandexsmd.fragments.PhotoFragment"
-    >
+    android:background="@color/cardview_dark_background">
 
     <TextView
         android:id="@+id/photo_title"
@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/photo_image"
         android:textAlignment="center"
+        android:textColor="@color/cardview_light_background"
         android:textStyle="bold"
         android:textSize="@dimen/title_text"
         android:gravity="center_horizontal"
@@ -29,6 +30,7 @@
         android:id="@+id/photo_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/cardview_light_background"
         android:textStyle="italic"
         android:textSize="@dimen/author_text"
         android:layout_below="@+id/photo_image"
@@ -37,8 +39,9 @@
         />
 
     <TextView
-        android:text="@string/author_label"
+        android:textColor="@color/cardview_light_background"
         android:textSize="@dimen/author_text"
+        android:text="@string/author_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/photo_author"

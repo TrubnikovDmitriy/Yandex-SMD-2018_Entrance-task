@@ -28,15 +28,11 @@ public class PhotoFragment extends Fragment {
 
 	private YandexPhoto yandexPhoto;
 
-	@Inject
-	YandexFotkiAPI yandexAPI;
+	@Inject YandexFotkiAPI yandexAPI;
 
-	@BindView(R.id.photo_image)
-	ImageView image;
-	@BindView(R.id.photo_title)
-	TextView title;
-	@BindView(R.id.photo_author)
-	TextView author;
+	@BindView(R.id.photo_image) ImageView image;
+	@BindView(R.id.photo_title) TextView title;
+	@BindView(R.id.photo_author) TextView author;
 
 
 	@Nullable
@@ -49,12 +45,38 @@ public class PhotoFragment extends Fragment {
 		ButterKnife.bind(this, view);
 		App.getComponent().inject(this);
 
-		final Bundle bundle = (savedInstanceState == null) ? getArguments() : savedInstanceState;
-		if (bundle == null) {
-			throw new IllegalArgumentException("Bundle is null");
+		// Switching to full-screen mode by click
+		view.setOnClickListener(new SwitchFullscreenModeListener());
+
+
+		final Bundle bundle;
+		if (savedInstanceState != null) {
+			// Switch to fullscreen-mode after rotate
+			view.performClick();
+			bundle = savedInstanceState;
+
+		} else {
+			if (getArguments() == null) {
+				throw new IllegalArgumentException("Bundle is null");
+			}
+			bundle = getArguments();
 		}
 
 		yandexPhoto = (YandexPhoto) bundle.getSerializable(PHOTO);
+		fillContent(yandexPhoto);
+
+		return view;
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		outState.putSerializable(PHOTO, yandexPhoto);
+		super.onSaveInstanceState(outState);
+	}
+
+
+	public void fillContent(@Nullable final YandexPhoto yandexPhoto) {
+
 		if (yandexPhoto == null) {
 			throw new IllegalArgumentException("Argument is null");
 		}
@@ -67,13 +89,40 @@ public class PhotoFragment extends Fragment {
 		image.setContentDescription(yandexPhoto.getTitle());
 		title.setText(yandexPhoto.getTitle());
 		author.setText(yandexPhoto.getAuthor());
-
-		return view;
 	}
 
-	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState) {
-		outState.putSerializable(PHOTO, yandexPhoto);
-		super.onSaveInstanceState(outState);
+	private void showSystemUI(@NonNull final View view) {
+		view.setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+		);
+	}
+
+	private void hideSystemUI(@NonNull final View view) {
+		view.setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+						| View.SYSTEM_UI_FLAG_FULLSCREEN
+						| View.SYSTEM_UI_FLAG_LOW_PROFILE
+						| View.SYSTEM_UI_FLAG_IMMERSIVE
+		);
+	}
+
+
+	class SwitchFullscreenModeListener implements View.OnClickListener {
+		@Override
+		public void onClick(View view) {
+			final Boolean visibleUI =
+					(view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+
+			if (visibleUI) {
+				hideSystemUI(view);
+			} else {
+				showSystemUI(view);
+			}
+		}
 	}
 }

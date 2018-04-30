@@ -83,7 +83,7 @@ public class PhotoFragment extends Fragment {
 			bundle = getArguments();
 		}
 
-		yandexPhoto = (YandexPhoto) bundle.getSerializable(PHOTO);
+		yandexPhoto = bundle.getParcelable(PHOTO);
 		fillContent(yandexPhoto);
 
 		return view;
@@ -91,7 +91,7 @@ public class PhotoFragment extends Fragment {
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
-		outState.putSerializable(PHOTO, yandexPhoto);
+		outState.putParcelable(PHOTO, yandexPhoto);
 		super.onSaveInstanceState(outState);
 	}
 

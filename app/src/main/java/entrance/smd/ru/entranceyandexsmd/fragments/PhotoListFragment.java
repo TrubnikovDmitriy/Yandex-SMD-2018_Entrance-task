@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -61,15 +59,8 @@ public class PhotoListFragment extends Fragment {
 
 		if (savedInstanceState == null) {
 			yandexAPI.getCollection(new OnYandexCollectionLoad(), null);
-
 		} else {
-			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
-
-			if (objects != null) {
-				// Try to cast Object[] to YandexPhoto[]
-				YandexPhoto[] dashes = Arrays.copyOf(objects, objects.length, YandexPhoto[].class);
-				dataset = new ArrayList<>(Arrays.asList(dashes));
-			}
+			dataset = savedInstanceState.getParcelableArrayList(DATASET);
 			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 
@@ -80,8 +71,7 @@ public class PhotoListFragment extends Fragment {
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
-		// TODO: make Parcelable
-		outState.putSerializable(DATASET, adapter.getDataset().toArray());
+		outState.putParcelableArrayList(DATASET, adapter.getDataset());
 		super.onSaveInstanceState(outState);
 	}
 
@@ -171,7 +161,7 @@ public class PhotoListFragment extends Fragment {
 			if (getFragmentManager() != null) {
 
 				final Bundle bundle = new Bundle();
-				bundle.putSerializable(PhotoFragment.PHOTO, photo);
+				bundle.putParcelable(PhotoFragment.PHOTO, photo);
 
 				final PhotoFragment photoFragment = new PhotoFragment();
 				photoFragment.setArguments(bundle);

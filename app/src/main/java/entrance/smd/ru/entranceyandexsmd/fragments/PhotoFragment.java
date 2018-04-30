@@ -104,7 +104,8 @@ public class PhotoFragment extends Fragment {
 
 		Picasso.with(getContext())
 				.load(yandexPhoto.getLargeImageUrl())
-				.placeholder(R.mipmap.placeholder)
+				.placeholder(R.drawable.photo_loading)
+				.error(R.drawable.photo_error)
 				.into(image);
 
 		image.setContentDescription(yandexPhoto.getTitle());

@@ -180,7 +180,7 @@ public class PhotoListFragment extends Fragment {
 
 	private final class OnEndlessScrollListener extends RecyclerView.OnScrollListener {
 
-		// How many photos have to remain that starting load extra data
+		// How many photos have to remain that starting adapter_loading extra data
 		private static final int START_LOADING_THRESHOLD = 2;
 		private final Handler handler = new Handler(Looper.getMainLooper());
 		private boolean isLoading = false;

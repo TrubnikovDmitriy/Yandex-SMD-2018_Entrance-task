@@ -22,10 +22,6 @@ public class MainActivity extends AppCompatActivity {
 }
 
 // TODO:
-// 5) Заменить RelativeLayout на LinerLayout, чтобы изображение не налазило на текст?
-// 6) Увеличить кол-во колонок в Portland
 // 8) Обертки для Listener'ов, чтобы избежать утечек памяти
 // 9) Тесты блэт
-// 10) Значочки-хуечки, иконки-поебонки
-// 13) Изменить placeholder для picasso и добавить икону на случай фейла
 // 14) Добавить кнопки действий на ActionBar

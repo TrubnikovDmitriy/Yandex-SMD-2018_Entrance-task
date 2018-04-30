@@ -32,24 +32,21 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 	private class PhotoHolder extends RecyclerView.ViewHolder {
 
 		private final ImageView imageView;
-		private final Picasso picasso;
-		private YandexPhoto photo;
 
 		private PhotoHolder(CardView item) {
 			super(item);
-			// TODO: remove picasso from constructor
-			picasso = Picasso.with(item.getContext());
-			picasso.setIndicatorsEnabled(true);
 			imageView = item.findViewById(R.id.image_in_holder);
 		}
 
 		private void updateData(@NonNull final YandexPhoto photo) {
 
-			this.photo = photo;
 			imageView.setContentDescription(photo.getTitle());
-
-			picasso.load(photo.getSmallImageUrl())
-					.placeholder(R.mipmap.placeholder)
+			Picasso.with(null)
+					.load(photo.getSmallImageUrl())
+//					.placeholder(R.drawable.adapter_placeholder)
+					.placeholder(R.drawable.adapter_loading)
+//					.adapter_error(R.drawable.photo_error)
+					.error(R.drawable.adapter_error)
 					.fit()
 					.centerCrop()
 					.into(imageView);

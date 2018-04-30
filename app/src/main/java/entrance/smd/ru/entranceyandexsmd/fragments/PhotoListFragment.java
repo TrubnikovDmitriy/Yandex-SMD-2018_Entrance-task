@@ -153,7 +153,6 @@ public class PhotoListFragment extends Fragment {
 
 		@Override
 		public void onFailure(final Exception exception) {
-			Log.w("Network exception", exception);
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
@@ -193,6 +192,7 @@ public class PhotoListFragment extends Fragment {
 
 		// How many photos have to remain that starting load extra data
 		private static final int START_LOADING_THRESHOLD = 2;
+		private final Handler handler = new Handler(Looper.getMainLooper());
 		private boolean isLoading = false;
 
 		@Override
@@ -204,37 +204,50 @@ public class PhotoListFragment extends Fragment {
 			final Integer totalItemCount = layoutManager.getItemCount();
 			final Integer firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
 
+			// Check whether we are at the footer of RecyclerView
 			if (totalItemCount - (firstVisibleItem + visibleItemCount) <= START_LOADING_THRESHOLD) {
 
 				isLoading = true;
-
-				// Take the date of the last element in oldDataSet
 				final ArrayList<YandexPhoto> dataset = adapter.getDataset();
-				final String podDate = dataset.get(dataset.size() - 1).getPodDate();
 
+				if (dataset.isEmpty()) {
+					// If first loading is failed and adapter hasn't any data
+					yandexAPI.getCollection(
+							new YandexFotkiAPI.OnRequestCompleteListener<YandexCollection>() {
+						@Override
+						public void onSuccess(Response<YandexCollection> response,
+						                      @Nullable final YandexCollection body) {
+							if (response.isSuccessful() && body != null) {
+								adapter.addExtraData(body.getPhotos());
+							} else {
+								postToast(R.string.network_failure);
+							}
+							isLoading = false;
+						}
+
+						@Override
+						public void onFailure(Exception exception) {
+							postToast(R.string.network_err);
+							isLoading = false;
+						}
+					}, null);
+					return;
+				}
+
+				// Take the date of the last element in oldDataSet for pagination API
+				final String podDate = dataset.get(dataset.size() - 1).getPodDate();
 				yandexAPI.getCollection(
 						new YandexFotkiAPI.OnRequestCompleteListener<YandexCollection>() {
-
-							private final Handler handler = new Handler(Looper.getMainLooper());
 
 							@Override
 							public void onSuccess(final Response<YandexCollection> response,
 							                      @Nullable final YandexCollection body) {
 
 								if (response.isSuccessful() && body != null) {
-
 									final ArrayList<YandexPhoto> newDataSet = body.getPhotos();
 
 									if (newDataSet.isEmpty()) {
-										handler.post(new Runnable() {
-											@Override
-											public void run() {
-												progressBar.setVisibility(ProgressBar.INVISIBLE);
-												Toast.makeText(getContext(),
-														R.string.empty_dataset, Toast.LENGTH_LONG).show();
-											}
-										});
-
+										postToast(R.string.empty_dataset);
 									} else {
 										// Need to remove the first item of newDataSet to avoid
 										// duplicating the last image of the oldDataSet
@@ -243,34 +256,28 @@ public class PhotoListFragment extends Fragment {
 									}
 
 								} else {
-									handler.post(new Runnable() {
-										@Override
-										public void run() {
-											progressBar.setVisibility(ProgressBar.INVISIBLE);
-											Toast.makeText(getContext(),
-													R.string.network_failure, Toast.LENGTH_LONG).show();
-										}
-									});
+									postToast(R.string.network_failure);
 								}
 								isLoading = false;
 							}
 
 							@Override
 							public void onFailure(final Exception exception) {
-								Log.w("Network exception", exception);
-								handler.post(new Runnable() {
-									@Override
-									public void run() {
-										progressBar.setVisibility(ProgressBar.INVISIBLE);
-										Toast.makeText(getContext(),
-												R.string.network_err, Toast.LENGTH_LONG).show();
-									}
-								});
+								postToast(R.string.network_err);
 								isLoading = false;
 							}
 
 						}, podDate);
 			}
+		}
+
+		private void postToast(@NonNull final Integer resourceID) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(getContext(), resourceID, Toast.LENGTH_SHORT).show();
+				}
+			});
 		}
 	}
 }

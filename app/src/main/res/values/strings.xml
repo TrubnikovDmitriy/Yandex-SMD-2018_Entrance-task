@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">Entrance Yandex SMD</string>
+    <string name="app_name">Photos of the Day</string>
     <string name="no_photo_description">No photo description</string>
     <string name="network_failure">Invalid server response</string>
     <string name="network_err">Error connecting to server</string>
     <string name="empty_dataset">Empty data</string>
     <string name="author_label">Author:</string>
+    <string name="date_label">Date:</string>
 </resources>

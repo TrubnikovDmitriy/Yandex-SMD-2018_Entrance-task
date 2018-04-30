@@ -15,6 +15,8 @@ public class YandexPhoto implements Serializable {
 	private String title;
 	@SerializedName("id")
 	private String id;
+	@SerializedName("podDate")
+	private String podDate;
 	@SerializedName("img")
 	private YandexImages images;
 
@@ -43,6 +45,9 @@ public class YandexPhoto implements Serializable {
 		return images.large.getUrl();
 	}
 
+	public String getPodDate() {
+		return podDate;
+	}
 
 	private static final class YandexImages implements Serializable {
 		@SerializedName("L")

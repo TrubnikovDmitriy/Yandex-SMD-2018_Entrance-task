@@ -58,8 +58,9 @@ public class PhotoListFragment extends Fragment {
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 
 		ArrayList<YandexPhoto> dataset = null;
+
 		if (savedInstanceState == null) {
-			yandexAPI.getCollection(new OnYandexCollectionLoad());
+			yandexAPI.getCollection(new OnYandexCollectionLoad(), null);
 
 		} else {
 			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
@@ -190,6 +191,7 @@ public class PhotoListFragment extends Fragment {
 
 	private final class OnEndlessScrollListener extends RecyclerView.OnScrollListener {
 
+		// How many photos have to remain that starting load extra data
 		private static final int START_LOADING_THRESHOLD = 2;
 		private boolean isLoading = false;
 
@@ -203,16 +205,43 @@ public class PhotoListFragment extends Fragment {
 			final Integer firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
 
 			if (totalItemCount - (firstVisibleItem + visibleItemCount) <= START_LOADING_THRESHOLD) {
+
 				isLoading = true;
-				yandexAPI.getCollection(new YandexFotkiAPI.OnRequestCompleteListener<YandexCollection>() {
+
+				// Take the date of the last element in oldDataSet
+				final ArrayList<YandexPhoto> dataset = adapter.getDataset();
+				final String podDate = dataset.get(dataset.size() - 1).getPodDate();
+
+				yandexAPI.getCollection(
+						new YandexFotkiAPI.OnRequestCompleteListener<YandexCollection>() {
 
 							private final Handler handler = new Handler(Looper.getMainLooper());
 
 							@Override
 							public void onSuccess(final Response<YandexCollection> response,
 							                      @Nullable final YandexCollection body) {
+
 								if (response.isSuccessful() && body != null) {
-									adapter.addExtraData(body.getPhotos());
+
+									final ArrayList<YandexPhoto> newDataSet = body.getPhotos();
+
+									if (newDataSet.isEmpty()) {
+										handler.post(new Runnable() {
+											@Override
+											public void run() {
+												progressBar.setVisibility(ProgressBar.INVISIBLE);
+												Toast.makeText(getContext(),
+														R.string.empty_dataset, Toast.LENGTH_LONG).show();
+											}
+										});
+
+									} else {
+										// Need to remove the first item of newDataSet to avoid
+										// duplicating the last image of the oldDataSet
+										newDataSet.remove(0);
+										adapter.addExtraData(newDataSet);
+									}
+
 								} else {
 									handler.post(new Runnable() {
 										@Override
@@ -239,7 +268,8 @@ public class PhotoListFragment extends Fragment {
 								});
 								isLoading = false;
 							}
-						});
+
+						}, podDate);
 			}
 		}
 	}

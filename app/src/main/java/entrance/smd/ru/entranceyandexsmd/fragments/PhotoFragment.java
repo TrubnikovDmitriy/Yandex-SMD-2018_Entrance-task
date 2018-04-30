@@ -93,10 +93,7 @@ public class PhotoFragment extends Fragment {
 
 	private void showSystemUI(@NonNull final View view) {
 		view.setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-		);
+				View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 	}
 
 	private void hideSystemUI(@NonNull final View view) {

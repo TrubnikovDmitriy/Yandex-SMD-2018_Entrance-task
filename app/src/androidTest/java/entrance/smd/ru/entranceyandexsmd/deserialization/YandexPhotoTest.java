@@ -27,12 +27,7 @@ public class YandexPhotoTest {
 	@Test
 	public void happyPath() {
 		final Context context = InstrumentationRegistry.getTargetContext();
-		final String photoJSON = context.getResources().getString(R.string.test_json);
+		// "/home/dmitriy/Yandex/SMD/Entrance/app/build/generated/source/r/androidTest/debug/entrance/smd/ru/entranceyandexsmd/test/R.java"
 		final Gson gson = new Gson();
-		final YandexImage image = gson.fromJson(photoJSON, YandexImage.class);
-
-		assertEquals(context.getResources().getString(R.string.test_width), String.valueOf(image.getWidth()));
-		assertEquals(context.getResources().getString(R.string.test_height), String.valueOf(image.getHeight()));
-		assertEquals(context.getResources().getString(R.string.test_href), image.getUrl());
 	}
 }

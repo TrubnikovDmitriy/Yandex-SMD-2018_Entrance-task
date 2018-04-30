@@ -33,8 +33,12 @@ public class YandexFotkiAPI {
 	}
 
 
-	public void getCollection(@NonNull final OnRequestCompleteListener<YandexCollection> listener) {
-		final Call<YandexCollection> call = service.getPhoto();
+	public void getCollection(@NonNull final OnRequestCompleteListener<YandexCollection> listener,
+	                          @Nullable final String podDate) {
+
+		final Call<YandexCollection> call = (podDate == null) ?
+				service.getPhoto() : service.getPhoto(podDate);
+
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {

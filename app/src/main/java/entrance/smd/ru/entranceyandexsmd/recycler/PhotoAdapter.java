@@ -138,8 +138,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 		} catch (IllegalStateException e) {
 			// "Cannot call this method while RecyclerView is computing a layout or scrolling RecyclerView"
-			// It is a very rare case produced by notifyItem* when a small amount
-			// of new data is loaded and the user often scrolls the screen
+			// It's a very rare case produced by notifyItem* when a small amount of new data is loaded
+			// and user often scrolls the screen. It does not disrupt the application.
 			Log.w("Extra data", e);
 		}
 	}

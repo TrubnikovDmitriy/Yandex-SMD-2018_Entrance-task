@@ -15,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -22,6 +25,7 @@ import butterknife.ButterKnife;
 import entrance.smd.ru.entranceyandexsmd.App;
 import entrance.smd.ru.entranceyandexsmd.R;
 import entrance.smd.ru.entranceyandexsmd.models.YandexCollection;
+import entrance.smd.ru.entranceyandexsmd.models.YandexPhoto;
 import entrance.smd.ru.entranceyandexsmd.network.YandexFotkiAPI;
 import entrance.smd.ru.entranceyandexsmd.recycler.PhotoAdapter;
 import retrofit2.Response;
@@ -29,7 +33,7 @@ import retrofit2.Response;
 
 public class PhotoListFragment extends Fragment {
 
-	public static final String COLLECTION = "collection_data_bundle";
+	public static final String DATASET = "collection_data_bundle";
 
 	private PhotoAdapter adapter;
 	private GridLayoutManager layoutManager;
@@ -55,28 +59,36 @@ public class PhotoListFragment extends Fragment {
 
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 
-		YandexCollection collection = null;
+		ArrayList<YandexPhoto> dataset = null;
 		if (savedInstanceState == null) {
 			yandexAPI.getCollection(new OnYandexCollectionLoad());
+
 		} else {
-			collection = (YandexCollection) savedInstanceState.getSerializable(COLLECTION);
+			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
+
+			if (objects != null) {
+				// Try to cast Object[] to YandexPhoto[]
+				YandexPhoto[] dashes = Arrays.copyOf(objects, objects.length, YandexPhoto[].class);
+				dataset = new ArrayList<>(Arrays.asList(dashes));
+			}
 			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 
-		createRecyclerView(collection);
+		createRecyclerView(dataset);
 		return view;
 	}
 
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
-		outState.putSerializable(COLLECTION, adapter.getDataset());
+		// TODO: make Parcelable
+		outState.putSerializable(DATASET, adapter.getDataset().toArray());
 		super.onSaveInstanceState(outState);
 	}
 
-	private void createRecyclerView(@Nullable final YandexCollection collection) {
+	private void createRecyclerView(@Nullable final ArrayList<YandexPhoto> collection) {
 
-		adapter = new PhotoAdapter(collection == null ? null : collection.getPhotos());
+		adapter = new PhotoAdapter(collection);
 		recyclerView.setAdapter(adapter);
 		recyclerView.setHasFixedSize(true);
 

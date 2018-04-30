@@ -48,7 +48,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 			this.photo = photo;
 			imageView.setContentDescription(photo.getTitle());
 
-			picasso.load(photo.getSmallUrl())
+			picasso.load(photo.getSmallImageUrl())
 					.placeholder(R.mipmap.placeholder)
 					.fit()
 					.centerCrop()

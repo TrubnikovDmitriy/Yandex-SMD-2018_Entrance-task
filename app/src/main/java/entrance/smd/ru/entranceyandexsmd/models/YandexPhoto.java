@@ -5,16 +5,13 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 
+@SuppressWarnings("unused")
 public class YandexPhoto implements Serializable {
-	// TODO: try make fields final
-	// TODO: read about final in habrahabr guide
 
 	@SerializedName("author")
 	private String author;
 	@SerializedName("title")
 	private String title;
-	@SerializedName("id")
-	private String id;
 	@SerializedName("podDate")
 	private String podDate;
 	@SerializedName("img")
@@ -29,19 +26,11 @@ public class YandexPhoto implements Serializable {
 		return title;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public String getSmallUrl() {
+	public String getSmallImageUrl() {
 		return images.small.getUrl();
 	}
 
-	public String getMediumUrl() {
-		return images.medium.getUrl();
-	}
-
-	public String getLargeUrl() {
+	public String getLargeImageUrl() {
 		return images.large.getUrl();
 	}
 
@@ -49,11 +38,10 @@ public class YandexPhoto implements Serializable {
 		return podDate;
 	}
 
+
 	private static final class YandexImages implements Serializable {
 		@SerializedName("L")
 		private YandexImage small;
-		@SerializedName("XXL")
-		private YandexImage medium;
 		@SerializedName("XXXL")
 		private YandexImage large;
 	}

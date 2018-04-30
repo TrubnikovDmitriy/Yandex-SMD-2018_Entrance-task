@@ -10,7 +10,7 @@
 
     <ImageView
         android:background="@color/cardview_light_background"
-        android:id="@+id/image"
+        android:id="@+id/image_in_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/no_photo_description"

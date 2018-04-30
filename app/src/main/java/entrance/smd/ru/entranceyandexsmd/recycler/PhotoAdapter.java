@@ -26,6 +26,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 	@NonNull
 	private ArrayList<YandexPhoto> dataset = new ArrayList<>();
+	@Nullable
+	private OnImageClickListener listener;
 
 	private class PhotoHolder extends RecyclerView.ViewHolder {
 
@@ -35,9 +37,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 		private PhotoHolder(CardView item) {
 			super(item);
+			// TODO: remove picasso from constructor
 			picasso = Picasso.with(item.getContext());
 			picasso.setIndicatorsEnabled(true);
-			imageView = item.findViewById(R.id.image);
+			imageView = item.findViewById(R.id.image_in_holder);
 		}
 
 		private void updateData(@NonNull final YandexPhoto photo) {
@@ -83,7 +86,19 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 			case IMAGE_TYPE:
 				final CardView cardView = (CardView) LayoutInflater.from(parent.getContext())
 						.inflate(R.layout.image_holder, parent, false);
-				return new PhotoHolder(cardView);
+				final PhotoHolder photoHolder = new PhotoHolder(cardView);
+				if (listener != null) {
+					photoHolder.imageView.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							final Integer adapterPosition = photoHolder.getAdapterPosition();
+							if (adapterPosition != RecyclerView.NO_POSITION) {
+								listener.onClick(dataset.get(adapterPosition));
+							}
+						}
+					});
+				}
+				return photoHolder;
 
 			case LOADING_TYPE:
 				final View bar = LayoutInflater.from(parent.getContext())
@@ -115,6 +130,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 		return dataset.isEmpty() ? 0 : dataset.size() + 1;
 	}
 
+
 	@NonNull
 	public ArrayList<YandexPhoto> getDataset() {
 		return dataset;
@@ -142,5 +158,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 			// and user often scrolls the screen. It does not disrupt the application.
 			Log.w("Extra data", e);
 		}
+	}
+
+	public void onImageClickListenerListener(@Nullable OnImageClickListener listener) {
+		this.listener = listener;
+	}
+
+
+	public interface OnImageClickListener {
+		void onClick(@NonNull final YandexPhoto photo);
 	}
 }

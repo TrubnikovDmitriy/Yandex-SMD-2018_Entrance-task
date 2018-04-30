@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -53,7 +54,7 @@ public class PhotoListFragment extends Fragment {
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
 
-		final View view = inflater.inflate(R.layout.photo_list_fragment, container, false);
+		final View view = inflater.inflate(R.layout.fragment_photo_list, container, false);
 		ButterKnife.bind(this, view);
 		App.getComponent().inject(this);
 
@@ -89,6 +90,8 @@ public class PhotoListFragment extends Fragment {
 	private void createRecyclerView(@Nullable final ArrayList<YandexPhoto> collection) {
 
 		adapter = new PhotoAdapter(collection);
+		adapter.onImageClickListenerListener(new OnYandexImageClickListener());
+
 		recyclerView.setAdapter(adapter);
 		recyclerView.setHasFixedSize(true);
 
@@ -152,6 +155,30 @@ public class PhotoListFragment extends Fragment {
 							R.string.network_err, Toast.LENGTH_LONG).show();
 				}
 			});
+		}
+	}
+
+	private final class OnYandexImageClickListener implements PhotoAdapter.OnImageClickListener {
+		@Override
+		public void onClick(@NonNull YandexPhoto photo) {
+
+			if (getFragmentManager() != null) {
+
+				final Bundle bundle = new Bundle();
+				bundle.putSerializable(PhotoFragment.PHOTO, photo);
+
+				final PhotoFragment photoFragment = new PhotoFragment();
+				photoFragment.setArguments(bundle);
+
+				getFragmentManager()
+						.beginTransaction()
+						.hide(PhotoListFragment.this)
+						.add(R.id.fragment_container, photoFragment)
+						.addToBackStack(null)
+						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+						.setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+						.commit();
+			}
 		}
 	}
 

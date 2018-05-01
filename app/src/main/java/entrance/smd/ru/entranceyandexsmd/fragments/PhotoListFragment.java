@@ -10,6 +10,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -57,6 +60,7 @@ public class PhotoListFragment extends Fragment {
 
 		showSystemUI(container);
 		progressBar.setVisibility(ProgressBar.VISIBLE);
+		setHasOptionsMenu(true);
 
 		ArrayList<YandexPhoto> dataset = null;
 
@@ -80,6 +84,34 @@ public class PhotoListFragment extends Fragment {
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
+		inflater.inflate(R.menu.photo_list, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+
+			case R.id.menu_item_update:
+				// Cancel all current requests to avoid duplication of images
+				for (ListenerWrapper wrapper : wrappers) {
+					wrapper.unregister();
+				}
+				wrappers.clear();
+				// Clearing dataset in recycler
+				adapter.clearData();
+				// Start new loading as first time
+				progressBar.setVisibility(ProgressBar.VISIBLE);
+				wrappers.add(yandexAPI.getCollection(new OnYandexCollectionLoad(), null));
+				return true;
+
+			default:
+				return false;
+		}
+	}
+
+	@Override
 	public void onDestroy() {
 		for (ListenerWrapper wrapper : wrappers) {
 			wrapper.unregister();
@@ -90,7 +122,7 @@ public class PhotoListFragment extends Fragment {
 	private void createRecyclerView(@Nullable final ArrayList<YandexPhoto> collection) {
 
 		adapter = new PhotoAdapter(collection);
-		adapter.onImageClickListenerListener(new OnYandexImageClickListener());
+		adapter.setOnImageClickListenerListener(new OnYandexImageClickListener());
 
 		recyclerView.setAdapter(adapter);
 		recyclerView.setHasFixedSize(true);
@@ -183,7 +215,6 @@ public class PhotoListFragment extends Fragment {
 						.add(R.id.fragment_container, photoFragment)
 						.addToBackStack(null)
 						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-						.setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 						.commit();
 			}
 		}

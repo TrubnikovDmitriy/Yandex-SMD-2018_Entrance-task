@@ -109,6 +109,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 		if (holder instanceof PhotoHolder) {
 			((PhotoHolder) holder).updateData(dataset.get(position));
 		}
+		// Content of LoadingHolder is never changed
 	}
 
 	@Override
@@ -138,7 +139,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 		try {
 			notifyItemRangeInserted(oldSize, newDataset.size());
 
-			// Check size limit
+			// Check max-size limit
 			if (dataset.size() > MAX_DATA_SIZE) {
 				final Integer lastDeletedIndex = dataset.size() - MAX_DATA_SIZE;
 				dataset.subList(0, lastDeletedIndex).clear();
@@ -154,7 +155,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 		}
 	}
 
-	public void onImageClickListenerListener(@Nullable OnImageClickListener listener) {
+	public void clearData() {
+		if (!dataset.isEmpty()) {
+			dataset.clear();
+			notifyDataSetChanged();
+		}
+	}
+
+	public void setOnImageClickListenerListener(@Nullable OnImageClickListener listener) {
 		this.listener = listener;
 	}
 

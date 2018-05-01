@@ -37,7 +37,9 @@ public class YandexFotkiAPI {
 	getCollection(@NonNull OnRequestCompleteListener<YandexCollection> listener,
 	              @Nullable final String podDate) {
 
-		final ListenerWrapper<OnRequestCompleteListener<YandexCollection>> wrapper = new ListenerWrapper<>(listener);
+		final ListenerWrapper<OnRequestCompleteListener<YandexCollection>> wrapper
+				= new ListenerWrapper<>(listener);
+
 		final Call<YandexCollection> call = (podDate == null) ?
 				service.getPhoto() : service.getPhoto(podDate);
 
@@ -45,6 +47,11 @@ public class YandexFotkiAPI {
 			@Override
 			public void run() {
 				try {
+					// If task has already been canceled, there is no need to execute a long network request
+					// This case may occur if user many times to click on 'Update' cause it uses a SingleThreadExecutor
+					if (wrapper.getListener() == null) return;
+
+					// Long request
 					final Response<YandexCollection> response = call.execute();
 					final YandexCollection body = response.body();
 

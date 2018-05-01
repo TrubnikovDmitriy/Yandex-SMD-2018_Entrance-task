@@ -39,9 +39,9 @@ public class PhotoFragment extends Fragment {
 	private YandexPhoto yandexPhoto;
 	private AnimatorSet animatorHideTextContent;
 	private AnimatorSet animatorShowTextContent;
-	private final DateFormat dateParser =
+	private final static DateFormat dateParser =
 			new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);
-	private final DateFormat dateFormatter =
+	private final static DateFormat dateFormatter =
 			new SimpleDateFormat("dd-MM-yyyy", Locale.ROOT);
 
 	@Inject YandexFotkiAPI yandexAPI;
@@ -63,7 +63,6 @@ public class PhotoFragment extends Fragment {
 		final View view = inflater.inflate(R.layout.fragment_photo, container, false);
 		ButterKnife.bind(this, view);
 		App.getComponent().inject(this);
-
 
 		initTextAnimators();
 
@@ -98,7 +97,7 @@ public class PhotoFragment extends Fragment {
 	public void fillContent(@Nullable final YandexPhoto yandexPhoto) {
 
 		if (yandexPhoto == null) {
-			throw new IllegalArgumentException("Argument is null");
+			throw new IllegalArgumentException("Photo is null");
 		}
 
 		Picasso.with(getContext())

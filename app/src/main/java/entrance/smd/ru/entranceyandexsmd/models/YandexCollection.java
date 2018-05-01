@@ -5,13 +5,12 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 
-@SuppressWarnings("unused")
 public class YandexCollection {
 
 	@SerializedName("entries")
 	private ArrayList<YandexPhoto> photos;
 
-	public YandexCollection(ArrayList<YandexPhoto> photos) {
+	YandexCollection(ArrayList<YandexPhoto> photos) {
 		this.photos = photos;
 	}
 

@@ -20,8 +20,3 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 }
-
-// TODO:
-// 8) Обертки для Listener'ов, чтобы избежать утечек памяти
-// 9) Тесты блэт
-// 14) Добавить кнопки действий на ActionBar

@@ -1,6 +1,5 @@
 package entrance.smd.ru.entranceyandexsmd.models;
 
-
 import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;

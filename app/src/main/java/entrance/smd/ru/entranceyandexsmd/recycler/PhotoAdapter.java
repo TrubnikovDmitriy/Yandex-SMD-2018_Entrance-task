@@ -19,7 +19,6 @@ import entrance.smd.ru.entranceyandexsmd.models.YandexPhoto;
 
 public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-	@SuppressWarnings("all")
 	public static final int IMAGE_TYPE = 0;
 	public static final int LOADING_TYPE = 1;
 	private static final int MAX_DATA_SIZE = 500;

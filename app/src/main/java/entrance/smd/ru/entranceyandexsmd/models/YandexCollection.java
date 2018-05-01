@@ -11,6 +11,10 @@ public class YandexCollection {
 	@SerializedName("entries")
 	private ArrayList<YandexPhoto> photos;
 
+	public YandexCollection(ArrayList<YandexPhoto> photos) {
+		this.photos = photos;
+	}
+
 	public ArrayList<YandexPhoto> getPhotos() {
 		return photos;
 	}

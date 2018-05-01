@@ -1,6 +1,5 @@
 package entrance.smd.ru.entranceyandexsmd.fragments;
 
-
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;

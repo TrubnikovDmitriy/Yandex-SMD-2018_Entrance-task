@@ -43,9 +43,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 			imageView.setContentDescription(photo.getTitle());
 			Picasso.with(null)
 					.load(photo.getSmallImageUrl())
-//					.placeholder(R.drawable.adapter_placeholder)
 					.placeholder(R.drawable.adapter_loading)
-//					.adapter_error(R.drawable.photo_error)
 					.error(R.drawable.adapter_error)
 					.fit()
 					.centerCrop()

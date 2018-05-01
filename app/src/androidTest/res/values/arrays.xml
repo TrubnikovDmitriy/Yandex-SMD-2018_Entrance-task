@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+
+    <string-array name="testModelsTitles">
+       <item>Мороз и солнце! День чудесный!!!</item>
+       <item>Морозное утро</item>
+       <item>НА ОЗЕРЕ</item>
+   </string-array>
+
+    <string-array name="testModelsAuthors">
+       <item>savelevd</item>
+       <item>kanevskaya-tatyana</item>
+       <item>natkor647</item>
+   </string-array>
+
+    <string-array name="testModelsPodDates">
+       <item>2018-01-19T00:00:00Z</item>
+       <item>2018-01-18T00:00:00Z</item>
+       <item>2018-01-17T00:00:00Z</item>
+   </string-array>
+
+</resources>

@@ -9,7 +9,6 @@ import android.support.test.InstrumentationRegistry;
 import com.google.gson.Gson;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;

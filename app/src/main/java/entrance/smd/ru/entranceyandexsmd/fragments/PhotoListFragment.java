@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import entrance.smd.ru.entranceyandexsmd.models.YandexCollection;
 import entrance.smd.ru.entranceyandexsmd.models.YandexPhoto;
 import entrance.smd.ru.entranceyandexsmd.network.YandexFotkiAPI;
 import entrance.smd.ru.entranceyandexsmd.recycler.PhotoAdapter;
+import entrance.smd.ru.entranceyandexsmd.utils.ListenerWrapper;
 import retrofit2.Response;
 
 
@@ -36,6 +38,7 @@ public class PhotoListFragment extends Fragment {
 
 	private PhotoAdapter adapter;
 	private GridLayoutManager layoutManager;
+	private final LinkedList<ListenerWrapper> wrappers = new LinkedList<>();
 
 	@Inject YandexFotkiAPI yandexAPI;
 
@@ -58,7 +61,8 @@ public class PhotoListFragment extends Fragment {
 		ArrayList<YandexPhoto> dataset = null;
 
 		if (savedInstanceState == null) {
-			yandexAPI.getCollection(new OnYandexCollectionLoad(), null);
+			final ListenerWrapper wrapper = yandexAPI.getCollection(new OnYandexCollectionLoad(), null);
+			wrappers.add(wrapper);
 		} else {
 			dataset = savedInstanceState.getParcelableArrayList(DATASET);
 			progressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -75,6 +79,13 @@ public class PhotoListFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
+	@Override
+	public void onDestroy() {
+		for (ListenerWrapper wrapper : wrappers) {
+			wrapper.unregister();
+		}
+		super.onDestroy();
+	}
 
 	private void createRecyclerView(@Nullable final ArrayList<YandexPhoto> collection) {
 
@@ -202,7 +213,7 @@ public class PhotoListFragment extends Fragment {
 
 				if (dataset.isEmpty()) {
 					// If first loading is failed and adapter hasn't any data
-					yandexAPI.getCollection(
+					final ListenerWrapper wrapper = yandexAPI.getCollection(
 							new YandexFotkiAPI.OnRequestCompleteListener<YandexCollection>() {
 						@Override
 						public void onSuccess(Response<YandexCollection> response,
@@ -221,12 +232,13 @@ public class PhotoListFragment extends Fragment {
 							isLoading = false;
 						}
 					}, null);
+					wrappers.add(wrapper);
 					return;
 				}
 
 				// Take the date of the last element in oldDataSet for pagination API
 				final String podDate = dataset.get(dataset.size() - 1).getPodDate();
-				yandexAPI.getCollection(
+				final ListenerWrapper wrapper = yandexAPI.getCollection(
 						new YandexFotkiAPI.OnRequestCompleteListener<YandexCollection>() {
 
 							@Override
@@ -258,6 +270,7 @@ public class PhotoListFragment extends Fragment {
 							}
 
 						}, podDate);
+				wrappers.add(wrapper);
 			}
 		}
 

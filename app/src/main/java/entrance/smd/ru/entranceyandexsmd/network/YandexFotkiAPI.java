@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 
 import entrance.smd.ru.entranceyandexsmd.models.YandexCollection;
+import entrance.smd.ru.entranceyandexsmd.utils.ListenerWrapper;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -32,9 +33,11 @@ public class YandexFotkiAPI {
 	}
 
 
-	public void getCollection(@NonNull final OnRequestCompleteListener<YandexCollection> listener,
-	                          @Nullable final String podDate) {
+	public ListenerWrapper<OnRequestCompleteListener<YandexCollection>>
+	getCollection(@NonNull OnRequestCompleteListener<YandexCollection> listener,
+	              @Nullable final String podDate) {
 
+		final ListenerWrapper<OnRequestCompleteListener<YandexCollection>> wrapper = new ListenerWrapper<>(listener);
 		final Call<YandexCollection> call = (podDate == null) ?
 				service.getPhoto() : service.getPhoto(podDate);
 
@@ -44,12 +47,24 @@ public class YandexFotkiAPI {
 				try {
 					final Response<YandexCollection> response = call.execute();
 					final YandexCollection body = response.body();
-					listener.onSuccess(response, body);
+
+					final OnRequestCompleteListener<YandexCollection> listener = wrapper.getListener();
+					if (listener != null) {
+						listener.onSuccess(response, body);
+						wrapper.unregister();
+					}
+
 				} catch (IOException | RuntimeException e) {
-					listener.onFailure(e);
+					final OnRequestCompleteListener listener = wrapper.getListener();
+					if (listener != null) {
+						listener.onFailure(e);
+						wrapper.unregister();
+					}
 				}
 			}
 		});
+
+		return wrapper;
 	}
 
 

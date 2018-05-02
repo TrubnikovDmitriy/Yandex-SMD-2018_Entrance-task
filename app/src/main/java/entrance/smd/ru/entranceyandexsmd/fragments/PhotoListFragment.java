@@ -66,7 +66,7 @@ public class PhotoListFragment extends Fragment {
 
 		if (savedInstanceState == null) {
 			scrollListener.isLoading = true;
-			final ListenerWrapper wrapper = yandexAPI.getCollection(new OnYandexCollectionLoad(), null);
+			final ListenerWrapper wrapper = yandexAPI.getCollection(new OnFirstYandexCollectionLoad(), null);
 			wrappers.add(wrapper);
 		} else {
 			dataset = savedInstanceState.getParcelableArrayList(DATASET);
@@ -106,7 +106,7 @@ public class PhotoListFragment extends Fragment {
 				adapter.clearData();
 				// Start new loading as first time
 				progressBar.setVisibility(ProgressBar.VISIBLE);
-				wrappers.add(yandexAPI.getCollection(new OnYandexCollectionLoad(), null));
+				wrappers.add(yandexAPI.getCollection(new OnFirstYandexCollectionLoad(), null));
 				return true;
 
 			default:
@@ -159,56 +159,14 @@ public class PhotoListFragment extends Fragment {
 	}
 
 
-	private final class OnYandexCollectionLoad implements YandexFotkiAPI.OnRequestCompleteListener<YandexCollection> {
-
-		private final Handler handler = new Handler(Looper.getMainLooper());
-
-		@Override
-		public void onSuccess(final Response<YandexCollection> response,
-		                      @Nullable final YandexCollection body) {
-
-			if (response.isSuccessful() && body != null) {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						adapter.addExtraData(body.getPhotos());
-						progressBar.setVisibility(ProgressBar.INVISIBLE);
-						scrollListener.isLoading = false;
-					}
-				});
-
-			} else {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						progressBar.setVisibility(ProgressBar.INVISIBLE);
-						scrollListener.isLoading = false;
-						Toast.makeText(getContext(),
-								R.string.network_failure, Toast.LENGTH_LONG).show();
-					}
-				});
-			}
-		}
-
-		@Override
-		public void onFailure(final Exception exception) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					progressBar.setVisibility(ProgressBar.INVISIBLE);
-					scrollListener.isLoading = false;
-					Toast.makeText(getContext(),
-							R.string.network_err, Toast.LENGTH_LONG).show();
-				}
-			});
-		}
-	}
-
 	private final class OnYandexImageClickListener implements PhotoAdapter.OnImageClickListener {
+
 		@Override
 		public void onClick(@NonNull YandexPhoto photo) {
 
 			if (getFragmentManager() != null) {
+				// To avoid opening two and more images by a fast clicking
+				if (getFragmentManager().getBackStackEntryCount() != 0) return;
 
 				final Bundle bundle = new Bundle();
 				bundle.putParcelable(PhotoFragment.PHOTO, photo);
@@ -225,6 +183,45 @@ public class PhotoListFragment extends Fragment {
 						.commit();
 			}
 		}
+	}
+
+	private final class OnFirstYandexCollectionLoad implements YandexFotkiAPI.OnRequestCompleteListener<YandexCollection> {
+
+		private final Handler handler = new Handler(Looper.getMainLooper());
+
+		@Override
+		public void onSuccess(final Response<YandexCollection> response,
+		                      @Nullable final YandexCollection body) {
+
+			if (response.isSuccessful() && body != null) {
+				adapter.addExtraData(body.getPhotos());
+				finishLoading(null);
+			} else {
+				finishLoading(R.string.network_failure);
+			}
+		}
+
+		@Override
+		public void onFailure(final Exception exception) {
+			finishLoading(R.string.network_err);
+		}
+
+		// Hides progress bar, allows to start a new loads
+		// by scrolling, shows toast-message for user (optional)
+		private void finishLoading(@Nullable final Integer resourceID) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					progressBar.setVisibility(ProgressBar.INVISIBLE);
+					scrollListener.isLoading = false;
+
+					if (resourceID != null) {
+						Toast.makeText(getContext(),resourceID, Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
+		}
+
 	}
 
 	private final class OnEndlessScrollListener extends RecyclerView.OnScrollListener {
@@ -251,25 +248,7 @@ public class PhotoListFragment extends Fragment {
 
 				if (dataset.isEmpty()) {
 					// If first loading is failed and adapter hasn't any data
-					final ListenerWrapper wrapper = yandexAPI.getCollection(
-							new YandexFotkiAPI.OnRequestCompleteListener<YandexCollection>() {
-						@Override
-						public void onSuccess(Response<YandexCollection> response,
-						                      @Nullable final YandexCollection body) {
-							if (response.isSuccessful() && body != null) {
-								adapter.addExtraData(body.getPhotos());
-							} else {
-								postToast(R.string.network_failure);
-							}
-							isLoading = false;
-						}
-
-						@Override
-						public void onFailure(Exception exception) {
-							postToast(R.string.network_err);
-							isLoading = false;
-						}
-					}, null);
+					final ListenerWrapper wrapper = yandexAPI.getCollection(new OnFirstYandexCollectionLoad(), null);
 					wrappers.add(wrapper);
 					return;
 				}

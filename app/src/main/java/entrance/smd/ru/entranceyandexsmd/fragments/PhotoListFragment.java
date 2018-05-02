@@ -41,6 +41,7 @@ public class PhotoListFragment extends Fragment {
 
 	private PhotoAdapter adapter;
 	private GridLayoutManager layoutManager;
+	private OnEndlessScrollListener scrollListener;
 	private final LinkedList<ListenerWrapper> wrappers = new LinkedList<>();
 
 	@Inject YandexFotkiAPI yandexAPI;
@@ -99,6 +100,7 @@ public class PhotoListFragment extends Fragment {
 					wrapper.unregister();
 				}
 				wrappers.clear();
+				scrollListener.isLoading = false;
 				// Clearing dataset in recycler
 				adapter.clearData();
 				// Start new loading as first time
@@ -118,6 +120,7 @@ public class PhotoListFragment extends Fragment {
 		}
 		super.onDestroy();
 	}
+
 
 	private void createRecyclerView(@Nullable final ArrayList<YandexPhoto> collection) {
 
@@ -143,7 +146,8 @@ public class PhotoListFragment extends Fragment {
 		recyclerView.setLayoutManager(layoutManager);
 
 		// Loading additional data if RecyclerView is scrolled through
-		recyclerView.addOnScrollListener(new OnEndlessScrollListener());
+		scrollListener = new OnEndlessScrollListener();
+		recyclerView.addOnScrollListener(scrollListener);
 	}
 
 	// For return to normal view after exit from PhotoFragment

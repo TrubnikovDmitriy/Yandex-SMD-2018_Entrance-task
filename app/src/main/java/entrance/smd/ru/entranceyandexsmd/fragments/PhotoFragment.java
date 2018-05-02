@@ -2,24 +2,23 @@ package entrance.smd.ru.entranceyandexsmd.fragments;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -29,6 +28,7 @@ import entrance.smd.ru.entranceyandexsmd.App;
 import entrance.smd.ru.entranceyandexsmd.R;
 import entrance.smd.ru.entranceyandexsmd.models.YandexPhoto;
 import entrance.smd.ru.entranceyandexsmd.network.YandexFotkiAPI;
+import entrance.smd.ru.entranceyandexsmd.utils.TimeService;
 
 
 public class PhotoFragment extends Fragment {
@@ -39,10 +39,6 @@ public class PhotoFragment extends Fragment {
 	private YandexPhoto yandexPhoto;
 	private AnimatorSet animatorHideTextContent;
 	private AnimatorSet animatorShowTextContent;
-	private final static DateFormat dateParser =
-			new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);
-	private final static DateFormat dateFormatter =
-			new SimpleDateFormat("dd-MM-yyyy", Locale.ROOT);
 
 	@Inject YandexFotkiAPI yandexAPI;
 
@@ -65,6 +61,7 @@ public class PhotoFragment extends Fragment {
 		App.getComponent().inject(this);
 
 		initTextAnimators();
+		setHasOptionsMenu(true);
 
 		// Switching to full-screen mode by click
 		view.setOnClickListener(new SwitchFullscreenModeListener());
@@ -93,6 +90,28 @@ public class PhotoFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
+		inflater.inflate(R.menu.photo, menu);
+
+		// Created share action for sending images
+		final MenuItem shareItem = menu.findItem(R.id.menu_item_share);
+		final ShareActionProvider shareActionProvider =
+				(ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+
+		final Intent shareIntent = new Intent()
+				.setAction(Intent.ACTION_SEND)
+				.setType("text/plain")
+				.putExtra(Intent.EXTRA_TEXT, yandexPhoto.getLargeImageUrl());
+
+		shareActionProvider.setShareIntent(shareIntent);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return (item.getItemId() == R.id.menu_item_share);
+	}
 
 	public void fillContent(@Nullable final YandexPhoto yandexPhoto) {
 
@@ -100,7 +119,7 @@ public class PhotoFragment extends Fragment {
 			throw new IllegalArgumentException("Photo is null");
 		}
 
-		Picasso.with(getContext())
+		Picasso.with(null)
 				.load(yandexPhoto.getLargeImageUrl())
 				.placeholder(R.drawable.photo_loading)
 				.error(R.drawable.photo_error)
@@ -109,7 +128,7 @@ public class PhotoFragment extends Fragment {
 		image.setContentDescription(yandexPhoto.getTitle());
 		title.setText(yandexPhoto.getTitle());
 		author.setText(yandexPhoto.getAuthor());
-		date.setText(parsePodDate(yandexPhoto.getPodDate()));
+		date.setText(TimeService.parsePodDate(yandexPhoto.getPodDate()));
 	}
 
 	private void showSystemUI(@NonNull final View view) {
@@ -152,17 +171,6 @@ public class PhotoFragment extends Fragment {
 				ObjectAnimator.ofFloat(date, View.ALPHA, 0f, 1f)
 		);
 		animatorShowTextContent.setDuration(ANIMATION_DURATION);
-	}
-
-	@Nullable
-	private String parsePodDate(@NonNull final String format) {
-		try {
-			final Date date = dateParser.parse(format);
-			return dateFormatter.format(date);
-		} catch (ParseException e) {
-			Log.w("Error parse podDate", e);
-			return null;
-		}
 	}
 
 

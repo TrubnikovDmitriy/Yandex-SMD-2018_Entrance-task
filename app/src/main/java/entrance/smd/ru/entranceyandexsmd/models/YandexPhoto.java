@@ -18,8 +18,8 @@ public class YandexPhoto implements Parcelable {
 	@SerializedName("img")
 	private YandexImages images;
 
-	YandexPhoto(String author, String title,
-	            String podDate, YandexImages images) {
+	private YandexPhoto(String author, String title,
+	                    String podDate, YandexImages images) {
 		this.author = author;
 		this.title = title;
 		this.podDate = podDate;
@@ -56,7 +56,7 @@ public class YandexPhoto implements Parcelable {
 		private YandexImage large;
 
 		private YandexImages(@NonNull YandexImage small,
-		             @NonNull YandexImage large) {
+		                     @NonNull YandexImage large) {
 			this.small = small;
 			this.large = large;
 		}

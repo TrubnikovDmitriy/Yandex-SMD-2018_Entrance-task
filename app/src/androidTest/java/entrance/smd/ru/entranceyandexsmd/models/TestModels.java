@@ -99,8 +99,8 @@ public class TestModels {
 					original.get(i).getTitle()
 			);
 			assertEquals(
-					testing.get(i).getTitle(),
-					original.get(i).getTitle()
+					testing.get(i).getPodDate(),
+					original.get(i).getPodDate()
 			);
 		}
 	}

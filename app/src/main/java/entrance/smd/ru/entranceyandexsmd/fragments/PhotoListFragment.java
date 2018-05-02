@@ -6,7 +6,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,7 +40,7 @@ public class PhotoListFragment extends Fragment {
 
 	private PhotoAdapter adapter;
 	private GridLayoutManager layoutManager;
-	private OnEndlessScrollListener scrollListener;
+	private final OnEndlessScrollListener scrollListener = new OnEndlessScrollListener();
 	private final LinkedList<ListenerWrapper> wrappers = new LinkedList<>();
 
 	@Inject YandexFotkiAPI yandexAPI;
@@ -66,6 +65,7 @@ public class PhotoListFragment extends Fragment {
 		ArrayList<YandexPhoto> dataset = null;
 
 		if (savedInstanceState == null) {
+			scrollListener.isLoading = true;
 			final ListenerWrapper wrapper = yandexAPI.getCollection(new OnYandexCollectionLoad(), null);
 			wrappers.add(wrapper);
 		} else {
@@ -95,12 +95,13 @@ public class PhotoListFragment extends Fragment {
 		switch (item.getItemId()) {
 
 			case R.id.menu_item_update:
+				// Prevents launch other loadings
+				scrollListener.isLoading = true;
 				// Cancel all current requests to avoid duplication of images
 				for (ListenerWrapper wrapper : wrappers) {
 					wrapper.unregister();
 				}
 				wrappers.clear();
-				scrollListener.isLoading = false;
 				// Clearing dataset in recycler
 				adapter.clearData();
 				// Start new loading as first time
@@ -146,7 +147,6 @@ public class PhotoListFragment extends Fragment {
 		recyclerView.setLayoutManager(layoutManager);
 
 		// Loading additional data if RecyclerView is scrolled through
-		scrollListener = new OnEndlessScrollListener();
 		recyclerView.addOnScrollListener(scrollListener);
 	}
 
@@ -171,8 +171,9 @@ public class PhotoListFragment extends Fragment {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						progressBar.setVisibility(ProgressBar.INVISIBLE);
 						adapter.addExtraData(body.getPhotos());
+						progressBar.setVisibility(ProgressBar.INVISIBLE);
+						scrollListener.isLoading = false;
 					}
 				});
 
@@ -181,6 +182,7 @@ public class PhotoListFragment extends Fragment {
 					@Override
 					public void run() {
 						progressBar.setVisibility(ProgressBar.INVISIBLE);
+						scrollListener.isLoading = false;
 						Toast.makeText(getContext(),
 								R.string.network_failure, Toast.LENGTH_LONG).show();
 					}
@@ -194,6 +196,7 @@ public class PhotoListFragment extends Fragment {
 				@Override
 				public void run() {
 					progressBar.setVisibility(ProgressBar.INVISIBLE);
+					scrollListener.isLoading = false;
 					Toast.makeText(getContext(),
 							R.string.network_err, Toast.LENGTH_LONG).show();
 				}
@@ -215,10 +218,10 @@ public class PhotoListFragment extends Fragment {
 
 				getFragmentManager()
 						.beginTransaction()
+						.setCustomAnimations(R.anim.photo_enter, R.anim.photo_exit, R.anim.photo_pop_enter, R.anim.photo_pop_exit)
 						.hide(PhotoListFragment.this)
 						.add(R.id.fragment_container, photoFragment)
 						.addToBackStack(null)
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 						.commit();
 			}
 		}

@@ -7,12 +7,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -63,10 +66,20 @@ public class PhotoFragment extends Fragment {
 		initTextAnimators();
 		setHasOptionsMenu(true);
 
-		// Switching to full-screen mode by click
-		view.setOnClickListener(new SwitchFullscreenModeListener());
-		view.performClick();
+		// Gesture control (for fling-up and single-click)
+		view.setOnTouchListener(new View.OnTouchListener() {
+			final GestureDetectorCompat gestureDetector =
+					new GestureDetectorCompat(getContext(), new PhotoGestureListener(view));
 
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+				gestureDetector.onTouchEvent(event);
+				view.performClick();
+				return true;
+			}
+
+		});
+		hideSystemUI(view);
 
 		final Bundle bundle;
 		if (savedInstanceState != null) {
@@ -174,9 +187,30 @@ public class PhotoFragment extends Fragment {
 	}
 
 
-	class SwitchFullscreenModeListener implements View.OnClickListener {
+	private class PhotoGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+		private final Float MIN_VELOCITY_Y_FOR_SWIPE = -5_000f;
+		private final View view;
+
+		PhotoGestureListener(View view) {
+			this.view = view;
+		}
+
+		// Returns to the previous fragment by flinging to up
 		@Override
-		public void onClick(View view) {
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+			if (velocityY < MIN_VELOCITY_Y_FOR_SWIPE && getFragmentManager() != null) {
+				getFragmentManager().popBackStack();
+				return true;
+			}
+
+			return false;
+		}
+
+		// Switches to the full-screen mode by click
+		@Override
+		public boolean onSingleTapConfirmed(MotionEvent e) {
 			final Boolean visibleUI =
 					(view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
 
@@ -191,6 +225,7 @@ public class PhotoFragment extends Fragment {
 					animatorHideTextContent.start();
 				}
 			}
+			return true;
 		}
 	}
 }
